@@ -26,7 +26,7 @@ class Ferramenta:
 class DBManager:
     def __init__(self, db_path="agf.db"):
         self.conn = sqlite3.connect(db_path)
-        self.conn.row_factory = sqlite3.Row  # Permite acessar colunas por nome
+        self.conn.row_factory = sqlite3.Row  # acessar colunas por nome
         self.cursor = self.conn.cursor()
 
     def autenticar(self, nome, senha):
@@ -82,3 +82,47 @@ class DBManager:
 
     def close(self):
         self.conn.close()
+
+    def adicionar_ferramenta(self, nome, responsavel, caminho_img):
+        try:
+            conn = sqlite3.connect("agf.db")
+            cursor = conn.cursor()
+            cursor.execute("""
+                           INSERT INTO ferramentas (nome, responsavel, caminho_img, emprestado_para, data_devolucao,
+                                                    emprestado_em)
+                           VALUES (?, ?, ?, NULL, NULL, NULL)
+                           """, (nome, responsavel, caminho_img))
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"Erro ao adicionar ferramenta: {e}")
+            return False
+
+    def buscar_ferramentas(self, termo):
+        termo_like = f"%{termo}%"
+        query = """
+            SELECT id, nome, responsavel, caminho_img, emprestado_para, data_devolucao, emprestado_em
+            FROM ferramentas
+            WHERE nome LIKE ?
+               OR responsavel LIKE ?
+               OR emprestado_para LIKE ?
+               OR data_devolucao LIKE ?
+               OR emprestado_em LIKE ?
+        """
+        self.cursor.execute(query, (termo_like, termo_like, termo_like, termo_like, termo_like))
+        rows = self.cursor.fetchall()
+
+        ferramentas = []
+        for row in rows:
+            ferramenta = {
+                "id": row[0],
+                "nome": row[1],
+                "responsavel": row[2],
+                "caminho_img": row[3],
+                "emprestado_para": row[4],
+                "data_devolucao": row[5],
+                "emprestado_em": row[6],
+            }
+            ferramentas.append(ferramenta)
+        return ferramentas

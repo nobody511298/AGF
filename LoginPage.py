@@ -21,13 +21,27 @@ class LoginPage(QWidget):
             print("Erro: imagem não encontrada")
         else:
             pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            pixmap = self.rounded_pixmap(pixmap, radius=15)  # Cantos arredondados suaves
+            pixmap = self.rounded_pixmap(pixmap, radius=15)
             logo_label.setPixmap(pixmap)
         logo_label.setAlignment(Qt.AlignCenter)
 
-        title = QLabel("Login do Sistema")
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 20px; font-weight: bold; color: #2c3e50;")
+        # Título principal
+        title_label = QLabel("Login do Sistema")
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #2c3e50;")
+
+        # Aviso de uso restrito
+        warning_label = QLabel(
+            "⚠️Este aplicativo é exclusivo para fins acadêmicos.")
+        warning_label.setAlignment(Qt.AlignCenter)
+        warning_label.setStyleSheet("""
+            font-size: 11px;
+            color: #b71c1c;
+            padding: 6px;
+            border: 1px solid #e57373;
+            background-color: #ffebee;
+            border-radius: 6px;
+        """)
 
         self.user_input = QLineEdit()
         self.user_input.setPlaceholderText("Usuário")
@@ -51,7 +65,8 @@ class LoginPage(QWidget):
         """)
 
         login_box.addWidget(logo_label)
-        login_box.addWidget(title)
+        login_box.addWidget(title_label)
+        login_box.addWidget(warning_label)
         login_box.addWidget(self.user_input)
         login_box.addWidget(self.pass_input)
         login_box.addWidget(login_button)

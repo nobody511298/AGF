@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame, QScrollArea
+from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame, QScrollArea, QPushButton
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Qt, Signal
 
@@ -11,11 +11,13 @@ class ClickableFrame(QFrame):
         super().mousePressEvent(event)
 
 class HomePage(QWidget):
-    ferramenta_clicked = Signal(object)  # vai emitir o objeto ferramenta
+    ferramenta_clicked = Signal(object)
+    abrir_busca_clicked = Signal()
+    abrir_add_tool_clicked = Signal()
+
 
     def __init__(self, db):
         super().__init__()
-
         self.db = db
 
         self.scroll_area = QScrollArea()
@@ -24,25 +26,41 @@ class HomePage(QWidget):
         self.container_widget = QWidget()
         self.container_layout = QVBoxLayout()
         self.container_widget.setLayout(self.container_layout)
-
         self.scroll_area.setWidget(self.container_widget)
 
         main_layout = QVBoxLayout()
+
+        # layout dos botões superiores
+        botoes_layout = QHBoxLayout()
+        botoes_layout.setAlignment(Qt.AlignLeft)
+
+        search_button = QPushButton("🔍 Buscar ferramentas")
+        search_button.setFixedHeight(30)
+        search_button.setStyleSheet("background-color: #1976d2; color: white; border-radius: 6px;")
+        search_button.clicked.connect(self.abrir_busca_clicked.emit)
+        botoes_layout.addWidget(search_button)
+
+        add_tool_button = QPushButton("➕ Adicionar ferramenta")
+        add_tool_button.setFixedHeight(30)
+        add_tool_button.setStyleSheet("background-color: #388e3c; color: white; border-radius: 6px; margin-left: 8px;")
+        add_tool_button.clicked.connect(self.abrir_add_tool_clicked.emit)
+        botoes_layout.addWidget(add_tool_button)
+
+
+
+        main_layout.addLayout(botoes_layout)
         main_layout.addWidget(self.scroll_area)
         self.setLayout(main_layout)
 
-        self.load_ferramentas()  # carrega a primeira vez
+        self.load_ferramentas()
 
     def load_ferramentas(self):
-        # limpa a lista atual
         for i in reversed(range(self.container_layout.count())):
             widget_to_remove = self.container_layout.itemAt(i).widget()
             if widget_to_remove:
                 widget_to_remove.setParent(None)
 
-        # cria a lista nova
         for ferramenta in self.db.get_ferramentas():
-
             container = ClickableFrame()
             container.setStyleSheet("""
                 QFrame {
@@ -91,7 +109,6 @@ class HomePage(QWidget):
             container.setLayout(layout_f)
             self.container_layout.addWidget(container)
 
-            # Função pra "congelar" o valor correto de ferramenta
             def make_emit(f):
                 return lambda: self.ferramenta_clicked.emit(f)
 
