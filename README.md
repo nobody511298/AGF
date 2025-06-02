@@ -3,6 +3,13 @@ app for tool management made for the systems development integration project of 
 
 #HOW TO USE#
 
+Open Pycharm or another IDE that uses Python
+
+Open the project in the IDE;
+Select Python 3.10 as the interpreter;
+Run "Main.py".
+
+
 Sign in in the login page. You can use 1 as User and also 1 as password.
 
 ![image](https://github.com/user-attachments/assets/476cb249-3e98-4486-b471-9a988809a87e)
